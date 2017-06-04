@@ -56,8 +56,8 @@ const presenceResponse = (exchange, request, response) => {
 
 const getPresenceData = (socket) => {
   const { query } = url.parse(socket.request.url, true);
-  const { type, name } = query;
-  return { type, name };
+  const { channel, type } = query;
+  return { channel, type };
 };
 
 const presenceConnection = (exchange, socket) => {
@@ -66,24 +66,23 @@ const presenceConnection = (exchange, socket) => {
 };
 
 const presenceDisconnect = (exchange, socket) => {
-  removePresence(exchange, socket);
-  clearEmptyPresences(exchange, socket);
+  removePresence(exchange, socket, () => clearEmptyPresences(exchange, socket));
 };
 
 const setPresence = (exchange, socket) => {
-  const { type, name } = getPresenceData(socket);
+  const { channel, type } = getPresenceData(socket);
   const path = ['presence'];
-  exchange.set(['presence', type, name, socket.id], true);
+  exchange.set(['presence', channel, type, socket.id], true);
 };
 
-const removePresence = (exchange, socket) => {
-  const { type, name } = getPresenceData(socket);
-  exchange.remove(['presence', type, name, socket.id]);
+const removePresence = (exchange, socket, callback) => {
+  const { channel, type } = getPresenceData(socket);
+  exchange.remove(['presence', channel, type, socket.id], callback);
 };
 
 const clearEmptyPresences = (exchange, socket) => {
-  const { type, name } = getPresenceData(socket);
-  exchange.get(['presence', type, name], (err, value) => {
+  const { channel, type } = getPresenceData(socket);
+  exchange.get(['presence', channel, type], (err, value) => {
     if (err) {
       console.log('EXCHANGE ERR', err);
     } else {
