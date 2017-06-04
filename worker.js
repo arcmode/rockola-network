@@ -28,9 +28,9 @@ const attach = (worker) => {
 const PresenceTypes = ['host', 'client'];
 
 const hasPresenceData = (socket) => {
-  const { type, name } = getPresenceData(socket);
+  const { type, channel } = getPresenceData(socket);
   const validType = PresenceTypes.indexOf(type) >= 0;
-  const validName = !!name.length;
+  const validName = !!channel.length;
   return (validType && validName);
 };
 
