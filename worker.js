@@ -48,7 +48,7 @@ const presenceResponse = (exchange, request, response) => {
       response.writeHead(500, jsonHeaders(jsonError));
       return response.end(jsonError);
     }
-    const jsonData = JSON.stringify(Object.keys(data));
+    const jsonData = JSON.stringify(data);
     response.writeHead(200, jsonHeaders(jsonData));
     return response.end(jsonData);
   });
