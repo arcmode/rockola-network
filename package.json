@@ -1,0 +1,25 @@
+{
+  "name": "rockola-network",
+  "version": "1.0.0",
+  "description": "TODO: everything",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drojas/rockola-network.git"
+  },
+  "dependencies": {
+    "connect": "3.0.1",
+    "express": "4.13.1",
+    "socketcluster": "^5.5.0",
+    "socketcluster-client": "^5.5.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drojas/rockola-network/issues"
+  },
+  "homepage": "https://github.com/drojas/rockola-network#readme"
+}
