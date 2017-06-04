@@ -17,8 +17,21 @@ const attach = (worker) => {
   });
 
   worker.scServer.on('connection', (socket) => {
-    presenceConnection(exchange, socket);
+    // TODO: validate presence data in handshake to avoid bad connections
+    //       or just disconnect here
+    if (hasPresenceData(socket)) {
+      presenceConnection(exchange, socket);
+    }
   });
+};
+
+const PresenceTypes = ['host', 'client'];
+
+const hasPresenceData = (socket) => {
+  const { type, name } = getPresenceData(socket);
+  const validType = PresenceTypes.indexOf(type) >= 0;
+  const validName = !!name.length;
+  return (validType && validName);
 };
 
 const jsonHeaders = (jsonStr) => {
@@ -41,17 +54,15 @@ const presenceResponse = (exchange, request, response) => {
   });
 };
 
-const getPresenceName = (socket) => {
+const getPresenceData = (socket) => {
   const { query } = url.parse(socket.request.url, true);
-  const { serviceName } = query;
-  return serviceName;
+  const { type, name } = query;
+  return { type, name };
 };
 
 const presenceConnection = (exchange, socket) => {
   setPresence(exchange, socket);
-  socket.on('disconnect', function () {
-    presenceDisconnect(exchange, socket);
-  });
+  socket.on('disconnect', () => presenceDisconnect(exchange, socket));
 };
 
 const presenceDisconnect = (exchange, socket) => {
@@ -60,24 +71,24 @@ const presenceDisconnect = (exchange, socket) => {
 };
 
 const setPresence = (exchange, socket) => {
-  const presenceName = getPresenceName(socket);
+  const { type, name } = getPresenceData(socket);
   const path = ['presence'];
-  exchange.set(['presence', presenceName, socket.id], true);
+  exchange.set(['presence', type, name, socket.id], true);
 };
 
 const removePresence = (exchange, socket) => {
-  const presenceName = getPresenceName(socket);
-  exchange.remove(['presence', presenceName, socket.id]);
+  const { type, name } = getPresenceData(socket);
+  exchange.remove(['presence', type, name, socket.id]);
 };
 
 const clearEmptyPresences = (exchange, socket) => {
-  const presenceName = getPresenceName(socket);
-  exchange.get(['presence', presenceName], (err, value) => {
+  const { type, name } = getPresenceData(socket);
+  exchange.get(['presence', type, name], (err, value) => {
     if (err) {
       console.log('EXCHANGE ERR', err);
     } else {
       if (Object.keys(value).length === 0) {
-        exchange.remove(['presence', presenceName]);
+        exchange.remove(['presence', type, name]);
       }
     }
   });
