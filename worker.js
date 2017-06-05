@@ -90,21 +90,6 @@ const clearEmptyPresences = (exchange, socket) => {
         exchange.remove(['presence', type, channel], (err) => {
           if (err) {
             console.log('EXCHANGE ERR', err);
-          } else {
-            exchange.get(['presence', type], (err, value) => {
-              if (err) {
-                console.log('EXCHANGE ERR', err);
-              } else {
-                if (Object.keys(value).length === 0) {
-                  console.log('clearing', type);
-                  exchange.remove(['presence', type], (err) => {
-                    if (err) {
-                      console.log('EXCHANGE ERR');
-                    }
-                  });
-                }
-              }
-            });
           }
         });
       }
