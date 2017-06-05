@@ -87,7 +87,27 @@ const clearEmptyPresences = (exchange, socket) => {
       console.log('EXCHANGE ERR', err);
     } else {
       if (Object.keys(value).length === 0) {
-        exchange.remove(['presence', type, name]);
+        console.log('clearing', channel, type);
+        exchange.remove(['presence', channel, type], (err) => {
+          if (err) {
+            console.log('EXCHANGE ERR', err);
+          } else {
+            exchange.get(['presence', channel], (err, value) => {
+              if (err) {
+                console.log('EXCHANGE ERR', err);
+              } else {
+                if (Object.keys(value).length === 0) {
+                  console.log('clearing', channel);
+                  exchange.remove(['presence', channel], (err) => {
+                    if (err) {
+                      console.log('EXCHANGE ERR');
+                    }
+                  });
+                }
+              }
+            });
+          }
+        });
       }
     }
   });
