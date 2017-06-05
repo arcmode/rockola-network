@@ -71,34 +71,33 @@ const presenceDisconnect = (exchange, socket) => {
 
 const setPresence = (exchange, socket) => {
   const { channel, type } = getPresenceData(socket);
-  const path = ['presence'];
-  exchange.set(['presence', channel, type, socket.id], true);
+  exchange.set(['presence', type, channel, socket.id], 'connected');
 };
 
 const removePresence = (exchange, socket, callback) => {
   const { channel, type } = getPresenceData(socket);
-  exchange.remove(['presence', channel, type, socket.id], callback);
+  exchange.remove(['presence', type, channel, socket.id], callback);
 };
 
 const clearEmptyPresences = (exchange, socket) => {
   const { channel, type } = getPresenceData(socket);
-  exchange.get(['presence', channel, type], (err, value) => {
+  exchange.get(['presence', type, channel], (err, value) => {
     if (err) {
       console.log('EXCHANGE ERR', err);
     } else {
       if (Object.keys(value).length === 0) {
-        console.log('clearing', channel, type);
-        exchange.remove(['presence', channel, type], (err) => {
+        console.log('clearing', type, channel);
+        exchange.remove(['presence', type, channel], (err) => {
           if (err) {
             console.log('EXCHANGE ERR', err);
           } else {
-            exchange.get(['presence', channel], (err, value) => {
+            exchange.get(['presence', type], (err, value) => {
               if (err) {
                 console.log('EXCHANGE ERR', err);
               } else {
                 if (Object.keys(value).length === 0) {
-                  console.log('clearing', channel);
-                  exchange.remove(['presence', channel], (err) => {
+                  console.log('clearing', type);
+                  exchange.remove(['presence', type], (err) => {
                     if (err) {
                       console.log('EXCHANGE ERR');
                     }
